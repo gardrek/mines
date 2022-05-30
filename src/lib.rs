@@ -1,7 +1,7 @@
-mod mines;
+mod field;
 mod random;
 
-use mines::*;
+use field::*;
 
 use ::wasm_bindgen::prelude::*;
 
