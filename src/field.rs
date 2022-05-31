@@ -2,11 +2,6 @@ use std::collections::HashSet;
 
 pub type Position = (usize, usize);
 
-pub enum OpenResult {
-    Mine,
-    NoMine(u8),
-}
-
 #[derive(Default)]
 pub struct MinesGame {
     width: usize,
@@ -135,9 +130,9 @@ impl MinesGame {
             .count() as u8
     }
 
-    pub fn click_open(&mut self, position: Position) -> Option<OpenResult> {
+    pub fn click_open(&mut self, position: Position) {
         if self.flagged_fields.contains(&position) {
-            return None;
+            return;
         }
 
         if self.open_fields.contains(&position) {
@@ -154,22 +149,22 @@ impl MinesGame {
                 }
             }
 
-            return None;
+            return;
         }
 
-        self.open(position)
+        self.open(position);
     }
 
-    fn open(&mut self, position: Position) -> Option<OpenResult> {
+    fn open(&mut self, position: Position) {
         if self.lost || self.open_fields.contains(&position) {
-            return None;
+            return;
         }
 
         self.open_fields.insert(position);
 
         let is_mine = self.mines.contains(&position);
 
-        Some(if is_mine {
+        if is_mine {
             // TODO: what a waste haha
             let mines = self.mines.clone();
 
@@ -178,8 +173,6 @@ impl MinesGame {
             }
 
             self.lost = true;
-
-            OpenResult::Mine
         } else {
             let mine_count = self.count_neighboring_mines(position);
 
@@ -188,9 +181,7 @@ impl MinesGame {
                     self.open(neighbor);
                 }
             }
-
-            OpenResult::NoMine(mine_count)
-        })
+        }
     }
 
     pub fn toggle_flag(&mut self, position: Position) {
